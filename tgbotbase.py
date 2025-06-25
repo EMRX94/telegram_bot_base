@@ -4,10 +4,10 @@ import telebot
 from datetime import datetime
 from telebot import types
 
-bot = telebot.TeleBot('7629937536:AAHFIj1rCDsaJYboCluTe0VM8VCW1KssLt8')  # ← ВСТАВЬ свой токен сюда
+bot = telebot.TeleBot('ТОКЕН')  # ← ВСТАВЬ свой токен сюда
 
-ADMIN_LOGIN = 'EMRX94'
-ADMIN_PASSWORD = 'ferllSEE3737'
+ADMIN_LOGIN = 'Логин'
+ADMIN_PASSWORD = 'Пороль'
 
 def init_db():
     conn = sqlite3.connect('bazadanix.sql')
@@ -53,12 +53,12 @@ def callback_handler(call):
 # ➕ Регистрация нового пользователя
 @bot.message_handler(commands=['new'])
 def start_register(message):
-    bot.send_message(message.chat.id, '🔐 Введите логин администратора:')
+    bot.send_message(message.chat.id, '🔑 Введите логин администратора:')
     bot.register_next_step_handler(message, verify_admin_for_new)
 
 def verify_admin_for_new(message):
     login = message.text.strip()
-    bot.send_message(message.chat.id, 'Введите пароль администратора:')
+    bot.send_message(message.chat.id, '🔐 Введите пароль администратора:')
     bot.register_next_step_handler(message, continue_register, login)
 
 def continue_register(message, login):
@@ -120,7 +120,7 @@ def user_location(message, name, password, email, phone):
 # 🔍 Проверка пользователя
 @bot.message_handler(commands=['check'])
 def check_data(message):
-    bot.send_message(message.chat.id, '🔐 Введите логин администратора:')
+    bot.send_message(message.chat.id, '🔑 Введите логин администратора:')
     bot.register_next_step_handler(message, check_admin_for_check)
 
 def check_admin_for_check(message):
@@ -153,7 +153,7 @@ def get_password_for_check(message, login):
 # 🗑 Удаление всех данных
 @bot.message_handler(commands=['delet'])
 def start_deletion(message):
-    bot.send_message(message.chat.id, '🔐 Введите логин администратора:')
+    bot.send_message(message.chat.id, '🔑 Введите логин администратора:')
     bot.register_next_step_handler(message, check_admin_login)
 
 def check_admin_login(message):

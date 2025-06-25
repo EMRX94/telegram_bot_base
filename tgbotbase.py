@@ -4,10 +4,10 @@ import telebot
 from datetime import datetime
 from telebot import types
 
-bot = telebot.TeleBot('ВАШ_ТОКЕН')  # ← ВСТАВЬ свой токен сюда
+bot = telebot.TeleBot('7629937536:AAHFIj1rCDsaJYboCluTe0VM8VCW1KssLt8')  # ← ВСТАВЬ свой токен сюда
 
-ADMIN_LOGIN = 'Ведите логин'
-ADMIN_PASSWORD = 'Ведите пороль'
+ADMIN_LOGIN = 'EMRX94'
+ADMIN_PASSWORD = 'ferllSEE3737'
 
 def init_db():
     conn = sqlite3.connect('bazadanix.sql')
@@ -26,7 +26,7 @@ def init_db():
 
 init_db()
 
-# 📌 Помощник при /start (БЕЗ логина и пароля)
+# Команда /start
 @bot.message_handler(commands=['start'])
 def show_info(message):
     markup = types.InlineKeyboardMarkup()
@@ -36,24 +36,21 @@ def show_info(message):
         types.InlineKeyboardButton("🗑 Удалить всё", callback_data="delet")
     )
     bot.send_message(message.chat.id,
-        '👋 Тут хранится база данных от EMRX.\n\n'
-        'ℹ️ Команды:\n'
-        '• /new – внести новые данные\n'
-        '• /check – проверить данные\n'
-        '• /delet – удалить всю таблицу\n\n'
+        '👋 Тут хранится база данных от EMRX \n'
+        '👨‍💻 Моя группа https://t.me/emrx94chat \n'
         '📌 Или нажмите одну из кнопок ниже:', reply_markup=markup)
 
-# 🔘 Обработка нажатий кнопок
+# Кнопки
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
-    if call.data == 'new': 
+    if call.data == 'new':
         start_register(call.message)
     elif call.data == 'check':
         check_data(call.message)
     elif call.data == 'delet':
         start_deletion(call.message)
 
-# 🔹 Регистрация
+# ➕ Регистрация нового пользователя
 @bot.message_handler(commands=['new'])
 def start_register(message):
     bot.send_message(message.chat.id, '🔐 Введите логин администратора:')
@@ -70,7 +67,7 @@ def continue_register(message, login):
         bot.send_message(message.chat.id, 'Введите логин пользователя:')
         bot.register_next_step_handler(message, user_name)
     else:
-        bot.send_message(message.chat.id, '❌ Неверный логин или пароль. Доступ запрещён.')
+        bot.send_message(message.chat.id, '❌ Неверный логин или пароль.')
 
 def user_name(message):
     name = message.text.strip()
@@ -120,7 +117,7 @@ def user_location(message, name, password, email, phone):
 
     bot.send_message(message.chat.id, '✅ Регистрация завершена. Используйте /check для проверки.')
 
-# 🔍 Проверка
+# 🔍 Проверка пользователя
 @bot.message_handler(commands=['check'])
 def check_data(message):
     bot.send_message(message.chat.id, '🔐 Введите логин администратора:')
@@ -128,37 +125,32 @@ def check_data(message):
 
 def check_admin_for_check(message):
     login = message.text.strip()
-    bot.send_message(message.chat.id, 'Введите пароль администратора:')
-    bot.register_next_step_handler(message, continue_check, login)
-
-def continue_check(message, login):
-    password = message.text.strip()
-    if login == ADMIN_LOGIN and password == ADMIN_PASSWORD:
-        bot.send_message(message.chat.id, 'Введите логин для проверки:')
-        bot.register_next_step_handler(message, get_login_for_check)
-    else:
-        bot.send_message(message.chat.id, '❌ Неверный логин или пароль. Доступ запрещён.')
-
-def get_login_for_check(message):
-    login = message.text.strip()
-    bot.send_message(message.chat.id, 'Введите пароль:')
+    bot.send_message(message.chat.id, '🔐 Введите пароль администратора:')
     bot.register_next_step_handler(message, get_password_for_check, login)
 
 def get_password_for_check(message, login):
     password = message.text.strip()
+
+    if login != ADMIN_LOGIN or password != ADMIN_PASSWORD:
+        bot.send_message(message.chat.id, '❌ Неверный логин или пароль.')
+        return
+
     conn = sqlite3.connect('bazadanix.sql')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM users WHERE name = ? AND pass = ?', (login, password))
-    user = cur.fetchone()
+    cur.execute('SELECT * FROM users')
+    users = cur.fetchall()
     conn.close()
 
-    if user:
-        bot.send_message(message.chat.id, f'✅ Найдено:\nЛогин: {user[1]}\nПароль: {user[2]}\nEmail: {user[3]}\n'
-                                          f'Телефон: {user[4]}\nАккаунт: {user[5]}\nДата: {user[6]}')
+    if users:
+        for user in users:
+            bot.send_message(message.chat.id,
+                f'🧾 Пользователь:\n'
+                f'Логин: {user[1]}\nПароль: {user[2]}\nEmail: {user[3]}\n'
+                f'Телефон: {user[4]}\nАккаунт: {user[5]}\nДата: {user[6]}')
     else:
-        bot.send_message(message.chat.id, '❌ Неверный логин или пароль.')
+        bot.send_message(message.chat.id, '⚠️ База данных пуста.')
 
-# 🧨 Удаление всех данных
+# 🗑 Удаление всех данных
 @bot.message_handler(commands=['delet'])
 def start_deletion(message):
     bot.send_message(message.chat.id, '🔐 Введите логин администратора:')
@@ -166,16 +158,16 @@ def start_deletion(message):
 
 def check_admin_login(message):
     login = message.text.strip()
-    bot.send_message(message.chat.id, '🔑 Введите пароль администратора:')
+    bot.send_message(message.chat.id, '🔐 Введите пароль администратора:')
     bot.register_next_step_handler(message, check_admin_password, login)
 
 def check_admin_password(message, login):
     password = message.text.strip()
     if login == ADMIN_LOGIN and password == ADMIN_PASSWORD:
-        bot.send_message(message.chat.id, '⚠️ Подтвердите удаление всех данных. Напишите "ПОДТВЕРЖДАЮ"')
+        bot.send_message(message.chat.id, '⚠️ Напишите ПОДТВЕРЖДАЮ чтобы удалить все записи:')
         bot.register_next_step_handler(message, confirm_delete)
     else:
-        bot.send_message(message.chat.id, '❌ Неверный логин или пароль. Доступ запрещён.')
+        bot.send_message(message.chat.id, '❌ Неверный логин или пароль.')
 
 def confirm_delete(message):
     if message.text.strip().upper() == 'ПОДТВЕРЖДАЮ':
@@ -184,8 +176,9 @@ def confirm_delete(message):
         cur.execute('DELETE FROM users')
         conn.commit()
         conn.close()
-        bot.send_message(message.chat.id, '🗑️ Все данные успешно удалены.')
+        bot.send_message(message.chat.id, '🗑️ Все данные удалены.')
     else:
         bot.send_message(message.chat.id, '❌ Удаление отменено.')
 
+# Запуск бота
 bot.polling(none_stop=True)

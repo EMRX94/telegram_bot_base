@@ -4,10 +4,10 @@ import telebot
 from datetime import datetime
 from telebot import types
 
-bot = telebot.TeleBot('ТОКЕН')  # ← ВСТАВЬ свой токен сюда
+bot = telebot.TeleBot('7629937536:AAHFIj1rCDsaJYboCluTe0VM8VCW1KssLt8')  # ← ВСТАВЬ свой токен сюда
 
-ADMIN_LOGIN = 'Логин'
-ADMIN_PASSWORD = 'Пороль'
+ADMIN_LOGIN = 'EMRX94'
+ADMIN_PASSWORD = 'ferllSEE373737'
 
 def init_db():
     conn = sqlite3.connect('bazadanix.sql')
